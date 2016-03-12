@@ -1,0 +1,45 @@
+---
+- name: add repository
+  yum: 
+    name: "{{pg_yum_pkg}}"
+    state: present 
+  become: yes
+  become_user: root
+  ignore_errors: true
+
+- name: install postgresql
+  yum: 
+    name: "{{pg_pkg_prefix}}"
+    state: latest
+  become: yes
+  become_user: root
+
+- name: install postgresql server
+  yum:
+    name: "{{pg_pkg_prefix}}-server"
+    state: latest
+  become: yes
+  become_user: root
+
+- name: install postgresql contrib
+  yum:
+    name: "{{pg_pkg_prefix}}-contrib"
+    state: latest
+  become: yes
+  become_user: root
+
+- name: initdb
+  command: "{{pg_install_dir}}/bin/{{pg_pkg_prefix}}-setup initdb"
+  become: yes
+  become_user: root
+  # if fail initdb, target host may initialized postgresql
+  ignore_errors: true
+
+- name: start postgresql server
+  service: 
+    name: "{{pg_service}}"
+    state: started 
+    enabled: yes
+  become: yes
+  become_user: root
+
